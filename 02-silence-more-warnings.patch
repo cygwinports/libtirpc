@@ -1,0 +1,38 @@
+diff --git a/src/clnt_bcast.c b/src/clnt_bcast.c
+index 140407b..d2c4147 100644
+--- a/src/clnt_bcast.c
++++ b/src/clnt_bcast.c
+@@ -74,8 +74,12 @@
+ #define	INITTIME 4000	/* Time to wait initially */
+ #define	WAITTIME 8000	/* Maximum time to wait */
+ 
++#ifndef POLLRDNORM
+ # define POLLRDNORM     0x040           /* Normal data may be read.  */
++#endif
++#ifndef POLLRDBAND
+ # define POLLRDBAND     0x080           /* Priority data may be read.  */
++#endif
+ 
+ 
+ 
+@@ -542,7 +546,7 @@ rpc_broadcast_exp(prog, vers, proc, xargs, argsp, xresults, resultsp,
+ 		try_again:
+ 			inlen = recvfrom(fdlist[i].fd, inbuf, fdlist[i].dsize,
+ 			    0, (struct sockaddr *)(void *)&fdlist[i].raddr,
+-			    &fdlist[i].asize);
++			    (socklen_t *)&fdlist[i].asize);
+ 			if (inlen < 0) {
+ 				if (errno == EINTR)
+ 					goto try_again;
+diff --git a/tirpc/rpc/clnt_soc.h b/tirpc/rpc/clnt_soc.h
+index 82330a3..8172f04 100644
+--- a/tirpc/rpc/clnt_soc.h
++++ b/tirpc/rpc/clnt_soc.h
+@@ -47,6 +47,7 @@
+  */
+ 
+ #include <sys/cdefs.h>
++#include <netinet/in.h>
+ 
+ #define UDPMSGSIZE      8800    /* rpc imposed limit on udp msg size */  
+ 

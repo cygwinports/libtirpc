@@ -1,0 +1,34 @@
+NAME="libtirpc"
+VERSION=0.2.1
+RELEASE=1
+CATEGORY="Libs"
+SUMMARY="A port of Sun's Transport-Independent RPC library"
+DESCRIPTION="TI-RPC provides a library that implements Transport Independent
+Remote Procedure Calls. It supports RPCs over IPv4, IPv6, as well as local
+unix sockets."
+HOMEPAGE="http://libtirpc.sourceforge.net"
+SRC_URI="mirror://sourceforge/libtirpc/${NAME}-${VERSION}.tar.bz2"
+PATCH_URI="
+	01-thread_key_t-warnings.patch
+	02-silence-more-warnings.patch
+	03-make-install-with-out-of-sourcetree-builds.patch
+	04-Clean-up-and-modernize-autotool-usage.patch
+	05-Make-NIS-support-optional.patch
+	06-Allow-using-system-XDR-implementation.patch
+	07-cygwin-specific-fixes.patch
+	08-misc.patch
+"
+
+PKG_NAMES="${NAME}1 ${NAME}-common ${NAME}-devel"
+libtirpc1_REQUIRES="libtirpc-common"
+libtirpc1_CONTENTS="usr/bin/cygtirpc-1.dll"
+libtirpc_common_CONTENTS="etc/ usr/share/doc/ usr/share/man/man5/"
+libtirpc_devel_CONTENTS="usr/include/ usr/lib/ usr/share/man/man3/"
+
+CYGCONF_ARGS="--disable-xdr"
+
+src_install () {
+	cd ${B}
+	cyginstall
+	make_etc_defaults /etc/netconfig
+}
