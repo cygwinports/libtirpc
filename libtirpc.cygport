@@ -1,5 +1,5 @@
 NAME="libtirpc"
-VERSION=0.2.1
+VERSION=0.2.4
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="A port of Sun's Transport-Independent RPC library"
@@ -9,14 +9,16 @@ unix sockets."
 HOMEPAGE="http://libtirpc.sourceforge.net"
 SRC_URI="mirror://sourceforge/libtirpc/${NAME}-${VERSION}.tar.bz2"
 PATCH_URI="
-	01-thread_key_t-warnings.patch
-	02-silence-more-warnings.patch
-	03-make-install-with-out-of-sourcetree-builds.patch
-	04-Clean-up-and-modernize-autotool-usage.patch
-	05-Make-NIS-support-optional.patch
-	06-Allow-using-system-XDR-implementation.patch
-	07-cygwin-specific-fixes.patch
-	08-misc.patch
+	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.2.5-rc3.patch
+	0.2.4-no-undefined.patch
+	0.2.4-getrpcbynumber.patch
+	0.2.4-cygwin-rpc-types.patch
+	0.2.4-cygwin-pthread.patch
+	0.2.4-cygwin-bindresvport.patch
+	0.2.4-cygwin-ffsl.patch
+	0.2.4-cygwin-ipv6.patch
+	0.2.4-cygwin-no-nis.patch
+	0.2.4-cygwin-poll.patch
 "
 
 PKG_NAMES="${NAME}1 ${NAME}-common ${NAME}-devel"
@@ -25,7 +27,7 @@ libtirpc1_CONTENTS="usr/bin/cygtirpc-1.dll"
 libtirpc_common_CONTENTS="etc/ usr/share/doc/ usr/share/man/man5/"
 libtirpc_devel_CONTENTS="usr/include/ usr/lib/ usr/share/man/man3/"
 
-CYGCONF_ARGS="--disable-xdr"
+CYGCONF_ARGS="--enable-gssapi"
 
 src_install () {
 	cd ${B}

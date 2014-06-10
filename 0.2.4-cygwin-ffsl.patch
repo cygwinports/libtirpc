@@ -1,0 +1,30 @@
+Should be a candidate for newlib/libc/misc.
+
+--- origsrc/libtirpc-0.2.4/src/svc.c	2014-06-09 17:08:42.517058200 -0500
++++ src/libtirpc-0.2.4/src/svc.c	2014-06-09 17:08:43.128635800 -0500
+@@ -599,6 +599,25 @@ svc_getreq (rdfds)
+   svc_getreqset (&readfds);
+ }
+ 
++#ifdef __CYGWIN__
++static int
++ffsl (long mask)
++{
++#ifdef __i386__
++  return ffs ((int)mask);
++#else
++  int bit = 0;
++
++  if (!mask) return 0;
++  for (;;)
++    {
++      if (((1 << bit++) & (unsigned long)mask) != 0)
++        return bit;
++    }
++#endif
++}
++#endif
++
+ void
+ svc_getreqset (readfds)
+      fd_set *readfds;
