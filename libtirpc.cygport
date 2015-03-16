@@ -1,5 +1,5 @@
 NAME="libtirpc"
-VERSION=0.2.4
+VERSION=0.2.5
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="A port of Sun's Transport-Independent RPC library"
@@ -9,13 +9,12 @@ unix sockets."
 HOMEPAGE="http://libtirpc.sourceforge.net"
 SRC_URI="mirror://sourceforge/libtirpc/${NAME}-${VERSION}.tar.bz2"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.2.5-rc3.patch
+	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.2.6-rc1.patch
 	0.2.4-no-undefined.patch
 	0.2.4-getrpcbynumber.patch
 	0.2.4-cygwin-rpc-types.patch
 	0.2.4-cygwin-pthread.patch
 	0.2.4-cygwin-bindresvport.patch
-	0.2.4-cygwin-ffsl.patch
 	0.2.4-cygwin-ipv6.patch
 	0.2.4-cygwin-no-nis.patch
 	0.2.4-cygwin-poll.patch
