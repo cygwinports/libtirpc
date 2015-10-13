@@ -1,0 +1,106 @@
+--- origsrc/libtirpc-0.3.2/Makefile.am	2015-06-16 10:35:08.000000000 -0500
++++ src/libtirpc-0.3.2/Makefile.am	2015-10-13 13:51:45.088825300 -0500
+@@ -19,6 +19,7 @@ nobase_include_HEADERS = tirpc/netconfig
+ 			 tirpc/rpc/rpc.h \
+ 			 tirpc/rpc/rpcent.h \
+ 			 tirpc/rpc/rpc_com.h \
++			 tirpc/rpc/rpc_des.h \
+ 			 tirpc/rpc/rpcb_prot.x \
+ 			 tirpc/rpc/rpcb_prot.h \
+ 			 tirpc/rpc/rpcb_clnt.h \
+--- origsrc/libtirpc-0.3.2/src/Makefile.am	2015-10-13 13:32:00.564909800 -0500
++++ src/libtirpc-0.3.2/src/Makefile.am	2015-10-13 13:46:04.847120100 -0500
+@@ -22,7 +22,7 @@ libtirpc_la_SOURCES = auth_none.c auth_u
+         pmap_prot.c pmap_prot2.c pmap_rmt.c rpc_prot.c rpc_commondata.c \
+         rpc_callmsg.c rpc_generic.c rpc_soc.c rpcb_clnt.c rpcb_prot.c \
+         rpcb_st_xdr.c svc.c svc_auth.c svc_dg.c svc_auth_unix.c svc_auth_none.c \
+-	svc_auth_des.c \
++	svc_auth_des.c des_crypt.c des_impl.c des_soft.c \
+         svc_generic.c svc_raw.c svc_run.c svc_simple.c svc_vc.c getpeereid.c \
+         auth_time.c auth_des.c authdes_prot.c debug.c
+ 
+--- origsrc/libtirpc-0.3.2/src/des_impl.c	2015-06-16 10:35:08.000000000 -0500
++++ src/libtirpc-0.3.2/src/des_impl.c	2015-10-13 13:48:31.419232400 -0500
+@@ -587,7 +587,7 @@ _des_crypt (char *buf, unsigned len, str
+     }
+   tin0 = tin1 = tout0 = tout1 = xor0 = xor1 = 0;
+   tbuf[0] = tbuf[1] = 0;
+-  __bzero (schedule, sizeof (schedule));
++  bzero (schedule, sizeof (schedule));
+ 
+   return (1);
+ }
+--- origsrc/libtirpc-0.3.2/tirpc/rpc/rpc_des.h	1969-12-31 18:00:00.000000000 -0600
++++ src/libtirpc-0.3.2/tirpc/rpc/rpc_des.h	2015-10-13 13:48:02.528063700 -0500
+@@ -0,0 +1,71 @@
++/*
++ * Generic DES driver interface
++ * Keep this file hardware independent!
++ * Copyright (c) 2010, Oracle America, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are
++ * met:
++ *
++ *     * Redistributions of source code must retain the above copyright
++ *       notice, this list of conditions and the following disclaimer.
++ *     * Redistributions in binary form must reproduce the above
++ *       copyright notice, this list of conditions and the following
++ *       disclaimer in the documentation and/or other materials
++ *       provided with the distribution.
++ *     * Neither the name of the "Oracle America, Inc." nor the names of its
++ *       contributors may be used to endorse or promote products derived
++ *       from this software without specific prior written permission.
++ *
++ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ *   FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ *   COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
++ *   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ *   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
++ *   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ *   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
++ *   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ *   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++ *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#ifndef _DES_H
++#define _DES_H
++
++#include <sys/types.h>
++
++#define DES_MAXLEN  65536   /* maximum # of bytes to encrypt  */
++#define DES_QUICKLEN    16  /* maximum # of bytes to encrypt quickly */
++
++enum desdir
++  {
++    ENCRYPT, DECRYPT
++  };
++enum desmode
++  {
++    CBC, ECB
++  };
++
++/*
++ * parameters to ioctl call
++ */
++struct desparams
++  {
++    u_char des_key[8];      /* key (with low bit parity) */
++    enum desdir des_dir;    /* direction */
++    enum desmode des_mode;  /* mode */
++    u_char des_ivec[8];     /* input vector */
++    unsigned des_len;       /* number of bytes to crypt */
++    union
++      {
++    u_char UDES_data[DES_QUICKLEN];
++    u_char *UDES_buf;
++      }
++    UDES;
++#define des_data UDES.UDES_data /* direct data here if quick */
++#define des_buf UDES.UDES_buf   /* otherwise, pointer to data */
++  };
++
++#endif
