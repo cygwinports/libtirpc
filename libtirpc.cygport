@@ -1,6 +1,6 @@
 NAME="libtirpc"
 VERSION=0.3.2
-RELEASE=1
+RELEASE=2
 CATEGORY="Libs"
 SUMMARY="A port of Sun's Transport-Independent RPC library"
 DESCRIPTION="TI-RPC provides a library that implements Transport Independent
@@ -10,6 +10,9 @@ HOMEPAGE="http://libtirpc.sourceforge.net"
 SRC_URI="mirror://sourceforge/libtirpc/${NAME}-${VERSION}.tar.bz2"
 PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.3.3-rc3.patch
+	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.3.2-rwlock_unlocks.patch?h=f23
+	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.3.2-svc_vc_create-mleak.patch?h=f23
+	http://pkgs.fedoraproject.org/cgit/libtirpc.git/plain/libtirpc-0.3.2-svcauth_gss-mleak.patch?h=f23
 	0.3.2-no-undefined.patch
 	0.2.4-cygwin-rpc-types.patch
 	0.2.4-cygwin-pthread.patch
@@ -24,8 +27,17 @@ PATCH_URI="
 PKG_NAMES="${NAME}1 ${NAME}-common ${NAME}-devel"
 libtirpc1_REQUIRES="libtirpc-common"
 libtirpc1_CONTENTS="usr/bin/cygtirpc-1.dll"
-libtirpc_common_CONTENTS="etc/ usr/share/doc/ usr/share/man/man5/"
-libtirpc_devel_CONTENTS="usr/include/ usr/lib/ usr/share/man/man3/"
+libtirpc_common_CONTENTS="
+	etc/
+	usr/share/doc/
+	usr/share/man/man5/
+"
+libtirpc_devel_CONTENTS="
+	usr/include/tirpc/
+	usr/lib/libtirpc.dll.a
+	usr/lib/pkgconfig/libtirpc.pc
+	usr/share/man/man3/
+"
 
 CYGCONF_ARGS="--enable-gssapi"
 
