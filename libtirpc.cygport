@@ -1,6 +1,6 @@
 NAME="libtirpc"
 VERSION=1.0.2
-RELEASE=1
+RELEASE=2
 CATEGORY="Libs"
 SUMMARY="A port of Sun's Transport-Independent RPC library"
 DESCRIPTION="TI-RPC provides a library that implements Transport Independent
@@ -13,13 +13,14 @@ PATCH_URI="
 	0.3.2-no-undefined.patch
 	0.2.4-cygwin-rpc-types.patch
 	0.2.4-cygwin-pthread.patch
-	0.2.4-cygwin-bindresvport.patch
+	1.0.2-cygwin-bindresvport.patch
 	0.2.4-cygwin-ipv6.patch
 	0.2.4-cygwin-poll.patch
 	0.3.2-cygwin-rpcent.patch
+	1.0.2-includedir.patch
 "
 
-PKG_NAMES="${NAME}3 ${NAME}-common ${NAME}-devel"
+PKG_NAMES="${NAME}3 ${NAME}-common ${NAME}-devel ${NAME}-doc"
 libtirpc3_REQUIRES="libtirpc-common"
 libtirpc3_CONTENTS="usr/bin/cygtirpc-3.dll"
 libtirpc_common_CONTENTS="
@@ -28,9 +29,12 @@ libtirpc_common_CONTENTS="
 	usr/share/man/man5/
 "
 libtirpc_devel_CONTENTS="
-	usr/include/tirpc/
+	usr/include/
 	usr/lib/libtirpc.dll.a
 	usr/lib/pkgconfig/libtirpc.pc
+"
+libtirpc_doc_CATEGORY="Doc"
+libtirpc_doc_CONTENTS="
 	usr/share/man/man3/
 "
 
@@ -38,6 +42,10 @@ CYGCONF_ARGS="--enable-gssapi"
 
 src_install () {
 	cd ${B}
-	cyginstall
+	cyginstall BIND_MANS=
 	make_etc_defaults /etc/netconfig
+
+#	dodir /usr/include/tirpc
+#	ln -s ../rpc /usr/include/tirpc/rpc
+#	ln -s ../rpcsvc /usr/include/tirpc/rpcsvc
 }
